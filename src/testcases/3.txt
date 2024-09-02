@@ -1,0 +1,8 @@
+CLASS MIPROGRAMA {
+    INT VARIABLE = 23; 
+	WHILE(VARIABLE < 34444444444) {
+        IF(VARIABLE + 34 = 34444) {
+            PRINT(VARIABLE); 
+        }
+    }
+}
