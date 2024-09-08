@@ -23,7 +23,8 @@ public class ControllerCompiler implements ActionListener{
             scanner.scan_code(view_app.getCode_area().getText()); 
             view_app.getTokens_area().setText(scanner.get_string_tokens());
             view_app.revalidate();
-            view_app.repaint();
+            view_app.repaint(); 
+            return; 
         }
         if(e.getSource() == view_app.getFile_btn()) {
             int option = view_app.getFile_chooser().showOpenDialog(view_app); 
@@ -33,10 +34,12 @@ public class ControllerCompiler implements ActionListener{
                     String source_code = FileReader.readFile(file); 
                     view_app.getCode_area().setText(source_code);
                     view_app.getTokens_area().setText("");
+                    view_app.getParser_area().setText("");
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
             }
+            return; 
         }
         if(e.getSource() == view_app.getSave_code_btn()) {
             String source_code = view_app.getCode_area().getText(); 
@@ -61,6 +64,20 @@ public class ControllerCompiler implements ActionListener{
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(view_app, "Error al guardar, en la salida");
             }
+
+            return; 
+        }
+        if(e.getSource() == view_app.getParser_btn()) {
+            Parser parser = new Parser(scanner.getTokenList());
+            if(parser.analize_code()) {
+                view_app.getParser_area().setText("OK");
+                view_app.repaint(); 
+                view_app.revalidate();
+            }else {
+                view_app.getParser_area().setText("Syntax Error");
+                view_app.repaint();
+                view_app.revalidate();
+            } 
         }
     }
 }

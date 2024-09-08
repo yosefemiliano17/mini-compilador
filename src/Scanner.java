@@ -1,28 +1,40 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Scanner {
-    
 
     private ArrayList<Token> token_list; 
     private ArrayList<TokenPair> token_pair; 
-    private HashMap<String, Token> token_map; 
+    private HashMap<String, Token> token_map;
+    private HashSet<String> reserved_words;  
 
     public Scanner() {
         this.token_list = new ArrayList<>(); 
         this.token_map = new HashMap<>(); 
         this.token_pair = new ArrayList<>(); 
+        this.reserved_words = new HashSet<>(); 
+
+        this.reserved_words.add("class");
+        this.reserved_words.add("if");
+        this.reserved_words.add("print");
+        this.reserved_words.add("read");
+        this.reserved_words.add("while");
+        this.reserved_words.add("int");
+        this.reserved_words.add("boolean");
+        this.reserved_words.add("true");
+        this.reserved_words.add("false");
 
         //palabras reservadas
-        token_map.put("class", Token.PALABRA_RESERVADA);
-        token_map.put("if", Token.PALABRA_RESERVADA); 
-        token_map.put("print", Token.PALABRA_RESERVADA); 
-        token_map.put("read", Token.PALABRA_RESERVADA); 
-        token_map.put("while", Token.PALABRA_RESERVADA); 
-        token_map.put("int", Token.PALABRA_RESERVADA); 
-        token_map.put("boolean", Token.PALABRA_RESERVADA); 
-        token_map.put("true", Token.PALABRA_RESERVADA); 
-        token_map.put("false", Token.PALABRA_RESERVADA); 
+        token_map.put("class", Token.CLASS);
+        token_map.put("if", Token.IF); 
+        token_map.put("print", Token.PRINT); 
+        token_map.put("read", Token.READ); 
+        token_map.put("while", Token.WHILE); 
+        token_map.put("int", Token.INT); 
+        token_map.put("boolean", Token.BOOLEAN); 
+        token_map.put("true", Token.TRUE); 
+        token_map.put("false", Token.FALSE); 
 
         //llaves
         token_map.put("{", Token.LLAVE_APERTURA); 
@@ -62,7 +74,7 @@ public class Scanner {
             if(Character.isDigit(source_code.charAt(index))) {
 
                 String number_token = ""; 
-                //si en el ciclo detecta algo que sea algun numero esta mal
+
                 while(index < source_code.length() && Character.isDigit(source_code.charAt(index))) {
                     number_token += source_code.charAt(index) + ""; 
                     index++; 
@@ -73,7 +85,7 @@ public class Scanner {
             }else if(Character.isLetter(source_code.charAt(index))) {
 
                 String id_token = ""; 
-                //si en el ciclo detecta un numero esta mal
+
                 while(index < source_code.length() && Character.isLetter(source_code.charAt(index))) {
                     id_token += source_code.charAt(index); 
                     index++; 
@@ -83,7 +95,7 @@ public class Scanner {
                 id_token = id_token.toLowerCase(); 
 
                 if(token_map.containsKey(id_token)) {
-                    save_token(id_token, Token.PALABRA_RESERVADA);
+                    save_token(id_token, token_map.get(id_token));
                 }else {
                     save_token(id_token, Token.IDENTIFICADOR);
                 }
@@ -114,7 +126,13 @@ public class Scanner {
     public String get_string_tokens() {
         String string_tokens = ""; 
         for(TokenPair p_token : token_pair) {
-            string_tokens += "<TKN " + p_token.getToken_str() + " , " + p_token.getToken() + ">\n"; 
+            Token tok; 
+            if(reserved_words.contains(p_token.getToken_str())) {
+                tok = Token.PALABRA_RESERVADA; 
+            }else {
+                tok = p_token.getToken(); 
+            }
+            string_tokens += "<TKN " + p_token.getToken_str() + " , " + tok + ">\n"; 
         }
         return string_tokens;
     }

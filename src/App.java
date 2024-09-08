@@ -8,9 +8,9 @@ import java.io.File;
 
 public class App extends JFrame{
 
-    private JButton scanner_btn, file_btn, save_code_btn; 
-    private JTextArea code_area, tokens_area;
-    private JLabel program_label, tokens_label; 
+    private JButton scanner_btn, file_btn, save_code_btn, parser_btn; 
+    private JTextArea code_area, tokens_area, parser_area;
+    private JLabel program_label, tokens_label, parser_label; 
     private JFileChooser file_chooser; 
 
     public App() {
@@ -18,6 +18,9 @@ public class App extends JFrame{
 
         this.scanner_btn = new JButton("Scanner");
         this.file_btn = new JButton("Archivo");
+        this.parser_btn = new JButton("Parser");
+        this.parser_area = new JTextArea(); 
+        this.parser_label = new JLabel("Parser:");
         this.code_area = new JTextArea(); 
         this.tokens_area = new JTextArea(); 
         this.program_label = new JLabel("Programa:");
@@ -39,6 +42,9 @@ public class App extends JFrame{
         setResizable(false);
 
         set_program_label(); 
+        set_parser_btn();
+        set_parser_area();
+        set_parser_label();
         set_tokens_label(); 
         set_scanner_btn(); 
         set_save_code_btn();
@@ -47,6 +53,26 @@ public class App extends JFrame{
         set_tokens_area();
 
         this.setVisible(true); 
+    }
+
+    public void set_parser_label() {
+        parser_label.setFont(new Font("Arial", Font.BOLD, 20));
+        parser_label.setBounds(1200, 623, 100, 70);
+        add(parser_label); 
+    }
+
+    public void set_parser_area() {
+        parser_area.setBounds(1020, 690, 440, 100);
+        parser_area.setBorder(BorderFactory.createLineBorder(Color.black));
+        parser_area.setFont(new Font("Arial", Font.PLAIN, 17));
+        parser_area.setEditable(false);
+        add(parser_area); 
+    }
+
+    public void set_parser_btn() {
+        parser_btn.setFont(new Font("Arial", Font.PLAIN, 27));
+        parser_btn.setBounds(800, 500, 150, 70);
+        add(parser_btn); 
     }
 
     public void set_save_code_btn() {
@@ -90,13 +116,13 @@ public class App extends JFrame{
     }
 
     public void set_tokens_area() {
-        tokens_area.setBounds(1020, 70, 440, 720);
+        tokens_area.setBounds(1020, 70, 440, 550);
         tokens_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         tokens_area.setFont(new Font("Arial", Font.PLAIN, 17));
         tokens_area.setEditable(false);
 
         JScrollPane scroll = new JScrollPane(tokens_area);
-        scroll.setBounds(1020, 70, 440, 720); 
+        scroll.setBounds(1020, 70, 440, 550); 
         add(scroll); 
     }
 
@@ -104,6 +130,7 @@ public class App extends JFrame{
         this.file_btn.addActionListener(listener);
         this.scanner_btn.addActionListener(listener);
         this.save_code_btn.addActionListener(listener); 
+        this.parser_btn.addActionListener(listener);
     }
 
     public JButton getScanner_btn() {
@@ -128,6 +155,14 @@ public class App extends JFrame{
 
     public JButton getSave_code_btn() {
         return save_code_btn;
+    }
+
+    public JTextArea getParser_area() {
+        return parser_area;
+    }
+
+    public JButton getParser_btn() {
+        return parser_btn;
     }
 
 }
