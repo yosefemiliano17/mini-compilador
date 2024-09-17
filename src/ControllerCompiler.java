@@ -6,14 +6,21 @@ import java.io.FileNotFoundException;
 
 import javax.swing.*;
 
+import Ast.NodesAst.ASTNode;
+import Lexical.Scanner;
+import Semantic.SemanticAnalizer;
+import Syntactic.Parser;
+
 public class ControllerCompiler implements ActionListener{
 
     private App view_app; 
     private Scanner scanner; 
+    private Parser parser; 
     
-    public ControllerCompiler(App view_app, Scanner scanner) {
+    public ControllerCompiler(App view_app, Scanner scanner, Parser parser) {
         this.view_app = view_app; 
         this.scanner = scanner; 
+        this.parser = parser; 
         this.view_app.add_scanner_listeners(this);
     }
 
@@ -22,6 +29,7 @@ public class ControllerCompiler implements ActionListener{
         if(e.getSource() == view_app.getScanner_btn()) {
             scanner.scan_code(view_app.getCode_area().getText()); 
             view_app.getTokens_area().setText(scanner.get_string_tokens());
+            this.parser.clean();
             view_app.revalidate();
             view_app.repaint(); 
             return; 
@@ -35,6 +43,8 @@ public class ControllerCompiler implements ActionListener{
                     view_app.getCode_area().setText(source_code);
                     view_app.getTokens_area().setText("");
                     view_app.getParser_area().setText("");
+                    view_app.getSemantic_Area().setText("");
+                    this.parser.clean(); 
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -68,16 +78,32 @@ public class ControllerCompiler implements ActionListener{
             return; 
         }
         if(e.getSource() == view_app.getParser_btn()) {
-            Parser parser = new Parser(scanner.getTokenList());
+            parser.setToken_list(scanner.getTokenList());
+            parser.setToken_pair(scanner.getToken_pair());
             if(parser.analize_code()) {
                 view_app.getParser_area().setText("OK");
+                /*ASTNode node = parser.getAst_root(); 
+                ASTNode.traverse(node);*/
                 view_app.repaint(); 
                 view_app.revalidate();
             }else {
-                view_app.getParser_area().setText("Syntax Error");
+                view_app.getParser_area().setText("Error");
                 view_app.repaint();
                 view_app.revalidate();
             } 
+            return;
+        }
+        if(e.getSource() == view_app.getSemantic_btn()) {
+            SemanticAnalizer semantic = new SemanticAnalizer(); 
+            if(semantic.check_program(parser.getAst_root())) {
+                view_app.getSemantic_Area().setText("OK");
+                view_app.repaint();
+                view_app.revalidate();
+            }else {
+                view_app.getSemantic_Area().setText("Error Semantico");
+                view_app.repaint();
+                view_app.revalidate();
+            }
         }
     }
 }

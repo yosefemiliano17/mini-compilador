@@ -1,3 +1,4 @@
+package Lexical;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -139,6 +140,10 @@ public class Scanner {
 
     public ArrayList<Token> getTokenList() {
         return token_list;
+    }
+
+    public ArrayList<TokenPair> getToken_pair() {
+        return token_pair;
     }
 
 }

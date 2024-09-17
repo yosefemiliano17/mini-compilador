@@ -8,9 +8,9 @@ import java.io.File;
 
 public class App extends JFrame{
 
-    private JButton scanner_btn, file_btn, save_code_btn, parser_btn; 
-    private JTextArea code_area, tokens_area, parser_area;
-    private JLabel program_label, tokens_label, parser_label; 
+    private JButton scanner_btn, file_btn, save_code_btn, parser_btn, semantic_btn; 
+    private JTextArea code_area, tokens_area, parser_area, semantic_Area;
+    private JLabel program_label, tokens_label, parser_label, semantic_label; 
     private JFileChooser file_chooser; 
 
     public App() {
@@ -27,6 +27,9 @@ public class App extends JFrame{
         this.tokens_label = new JLabel("Tokens:"); 
         this.save_code_btn = new JButton("Guardar"); 
         this.file_chooser = new JFileChooser(); 
+        this.semantic_Area = new JTextArea();
+        this.semantic_btn = new JButton("Semantico"); 
+        this.semantic_label = new JLabel("Semantico:");
 
         File working_directory = new File(System.getProperty("user.dir"));
         file_chooser.setCurrentDirectory(working_directory); 
@@ -39,7 +42,7 @@ public class App extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocationRelativeTo(null);
-        setResizable(false);
+        //setResizable(false);
 
         set_program_label(); 
         set_parser_btn();
@@ -51,18 +54,41 @@ public class App extends JFrame{
         set_file_btn(); 
         set_code_area();
         set_tokens_area();
+        set_semantic_btn(); 
+        set_semantic_label(); 
+        set_semantic_area(); 
 
         this.setVisible(true); 
     }
 
+    public void set_semantic_btn() {
+        semantic_btn.setFont(new Font("Arial", Font.PLAIN, 27));
+        semantic_btn.setBounds(800, 600, 150, 70);
+        add(semantic_btn); 
+    }
+
+    public void set_semantic_label() {
+        semantic_label.setFont(new Font("Arial", Font.BOLD, 20));
+        semantic_label.setBounds(1180, 623, 120, 70);
+        add(semantic_label); 
+    }
+
+    public void set_semantic_area() {
+        semantic_Area.setBounds(1020, 690, 440, 100);
+        semantic_Area.setBorder(BorderFactory.createLineBorder(Color.black));
+        semantic_Area.setFont(new Font("Arial", Font.PLAIN, 17));
+        semantic_Area.setEditable(false);
+        add(semantic_Area); 
+    }
+
     public void set_parser_label() {
         parser_label.setFont(new Font("Arial", Font.BOLD, 20));
-        parser_label.setBounds(1200, 623, 100, 70);
+        parser_label.setBounds(1200, 456, 100, 70);
         add(parser_label); 
     }
 
     public void set_parser_area() {
-        parser_area.setBounds(1020, 690, 440, 100);
+        parser_area.setBounds(1020, 523, 440, 100);
         parser_area.setBorder(BorderFactory.createLineBorder(Color.black));
         parser_area.setFont(new Font("Arial", Font.PLAIN, 17));
         parser_area.setEditable(false);
@@ -116,13 +142,13 @@ public class App extends JFrame{
     }
 
     public void set_tokens_area() {
-        tokens_area.setBounds(1020, 70, 440, 550);
+        tokens_area.setBounds(1020, 70, 440, 383);
         tokens_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         tokens_area.setFont(new Font("Arial", Font.PLAIN, 17));
         tokens_area.setEditable(false);
 
         JScrollPane scroll = new JScrollPane(tokens_area);
-        scroll.setBounds(1020, 70, 440, 550); 
+        scroll.setBounds(1020, 70, 440, 382); 
         add(scroll); 
     }
 
@@ -131,6 +157,7 @@ public class App extends JFrame{
         this.scanner_btn.addActionListener(listener);
         this.save_code_btn.addActionListener(listener); 
         this.parser_btn.addActionListener(listener);
+        this.semantic_btn.addActionListener(listener);
     }
 
     public JButton getScanner_btn() {
@@ -163,6 +190,14 @@ public class App extends JFrame{
 
     public JButton getParser_btn() {
         return parser_btn;
+    }
+
+    public JTextArea getSemantic_Area() {
+        return semantic_Area;
+    }
+
+    public JButton getSemantic_btn() {
+        return semantic_btn;
     }
 
 }
