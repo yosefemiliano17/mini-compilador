@@ -18,9 +18,11 @@ import java.util.ArrayList;
 public class SemanticAnalizer {
 
     private ScopedSymbolTable current_symbol_table;
+    private HashSet<String> declarated_variables; 
 
     public SemanticAnalizer() {
         this.current_symbol_table = new ScopedSymbolTable(null);
+        this.declarated_variables = new HashSet<>(); 
     }
 
     public boolean check_program(ASTNode node) {
@@ -104,8 +106,13 @@ public class SemanticAnalizer {
 
     //checa si los identificadores son todos iguales y ademas checa si existen 
     public boolean check_ids(ArrayList<TokenPair> arr_expression) {
-        TokenPair first_token = arr_expression.get(0);
-        Token type = current_symbol_table.get_symbol_info(first_token.getToken_str()).getType(); 
+        Token type = null; 
+        if(arr_expression.get(0).getToken() == Token.IDENTIFICADOR) {
+            type = current_symbol_table.get_symbol_info(arr_expression.get(0).getToken_str()).getType(); 
+        }else { 
+            Token first_token = arr_expression.get(0).getToken(); 
+            type = (first_token == Token.FALSE || first_token == Token.TRUE) ? Token.BOOLEAN : Token.INT; 
+        }
         for(TokenPair token : arr_expression) {
             if(token.getToken() == Token.IDENTIFICADOR) {
                 SymbolInfo info = current_symbol_table.get_symbol_info(token.getToken_str()); 
@@ -121,17 +128,31 @@ public class SemanticAnalizer {
         if(!check_ids(arr_expression)) {
             return false; 
         }
-        TokenPair first_token = arr_expression.get(0); 
-        if(first_token.getToken() == Token.BOOLEAN) {
+        Token type = null; 
+        if(arr_expression.get(0).getToken() == Token.IDENTIFICADOR) {
+            type = current_symbol_table.get_symbol_info(arr_expression.get(0).getToken_str()).getType(); 
+        }else { 
+            Token first_token = arr_expression.get(0).getToken(); 
+            type = (first_token == Token.FALSE || first_token == Token.TRUE) ? Token.BOOLEAN : Token.INT; 
+        }
+        if(type == Token.BOOLEAN) {
+            int cont = 0; 
             for(TokenPair token : arr_expression) {
-                if(token.getToken() != Token.IDENTIFICADOR){
-                    if(token.getToken() != Token.COMPARADOR_IGUAL) {
-                        return false;
+                if(token.getToken() == Token.TRUE || token.getToken() == Token.FALSE) {
+                    continue; 
+                }
+                if(token.getToken() != Token.IDENTIFICADOR && token.getToken() != Token.COMPARADOR_IGUAL){
+                    return false;
+                }
+                if(token.getToken() == Token.COMPARADOR_IGUAL) {
+                    cont++; 
+                    if(cont > 1) {
+                        return false; 
                     }
                 }
             }
-        }else {
-            //INT
+            return true; 
+        }else if(type == Token.INT){
             int cont = 0; 
             HashSet<Token> relational_operators = new HashSet<>();
             relational_operators.add(Token.MENOR_QUE); 
@@ -145,8 +166,9 @@ public class SemanticAnalizer {
                     }
                 }
             }
+            return true; 
         }
-        return true; 
+        return false; 
     }
 
     public boolean check_expression(ArrayList<TokenPair> arr_expression, Token type) {
@@ -186,7 +208,7 @@ public class SemanticAnalizer {
                 }
                 return true; 
             }
-        }else {
+        }else if(type == Token.INT){
             //INT
             HashSet<Token> bad_tokens = new HashSet<>();
             bad_tokens.add(Token.MENOR_QUE); 
@@ -208,6 +230,11 @@ public class SemanticAnalizer {
                 }
             }
             return true; 
+        }else{
+            if(arr_expression.size() == 1 && arr_expression.get(0).getToken() == Token.CADENA) {
+                return true; 
+            }
+            return false; 
         }
     }
 

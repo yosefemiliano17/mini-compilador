@@ -25,6 +25,7 @@ public class Scanner {
         this.reserved_words.add("boolean");
         this.reserved_words.add("true");
         this.reserved_words.add("false");
+        this.reserved_words.add("string");
 
         //palabras reservadas
         token_map.put("class", Token.CLASS);
@@ -34,6 +35,7 @@ public class Scanner {
         token_map.put("while", Token.WHILE); 
         token_map.put("int", Token.INT); 
         token_map.put("boolean", Token.BOOLEAN); 
+        token_map.put("string", Token.STRING); 
         token_map.put("true", Token.TRUE); 
         token_map.put("false", Token.FALSE); 
 
@@ -110,6 +112,19 @@ public class Scanner {
                 }
             }else if(token_map.containsKey(source_code.charAt(index)+"")){
                 save_token(source_code.charAt(index) + "", token_map.get(source_code.charAt(index) + "")); 
+            }else if(source_code.charAt(index) == '"'){
+                String cadena = "\"";
+                index++; 
+                while(index < source_code.length() && source_code.charAt(index) != '"'){
+                    cadena += source_code.charAt(index); 
+                    index++;
+                } 
+                if(index < source_code.length()) {
+                    cadena += "\"";
+                    save_token(cadena,Token.CADENA);
+                }else {
+                    save_token(cadena, Token.CADENA);
+                }
             }else {
                 save_token(source_code.charAt(index)+"", Token.ERROR);
             }

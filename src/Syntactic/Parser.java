@@ -258,7 +258,6 @@ public class Parser {
 
         next_token++;
 
-        //saca la expresion de donde sea que la tengas que sacar
         WhileNode while_node = new WhileNode(expression);
 
         if(!declarations_list(while_node)) {
@@ -348,7 +347,7 @@ public class Parser {
     }
 
     public boolean value(int index) {
-        return evaluate(index, Token.NUMERO) || boolean_value(index);
+        return evaluate(index, Token.NUMERO) || boolean_value(index) || evaluate(index, Token.CADENA);
     }
 
     public boolean boolean_value(int index) {
@@ -356,7 +355,7 @@ public class Parser {
     }
 
     public boolean data_type(int index) {
-        return evaluate(index, Token.BOOLEAN) || evaluate(index, Token.INT); 
+        return evaluate(index, Token.BOOLEAN) || evaluate(index, Token.INT) || evaluate(index, Token.STRING); 
     }
 
     public boolean operator(int index) {
