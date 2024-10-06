@@ -1,4 +1,5 @@
 import Lexical.Scanner;
+import Semantic.SemanticAnalizer;
 import Syntactic.Parser;
 
 public class Main {
@@ -7,6 +8,7 @@ public class Main {
         App main_app = new App(); 
         Scanner scanner = new Scanner(); 
         Parser parser = new Parser(); 
-        ControllerCompiler controller_compiler = new ControllerCompiler(main_app, scanner, parser); 
+        SemanticAnalizer semantic = new SemanticAnalizer(); 
+        ControllerCompiler controller_compiler = new ControllerCompiler(main_app, scanner, parser, semantic); 
     }
 }

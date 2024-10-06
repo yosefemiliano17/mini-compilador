@@ -6,21 +6,23 @@ import java.io.FileNotFoundException;
 
 import javax.swing.*;
 
-import Ast.NodesAst.ASTNode;
 import Lexical.Scanner;
 import Semantic.SemanticAnalizer;
 import Syntactic.Parser;
+import Utils.ScopedSymbolTable;
 
 public class ControllerCompiler implements ActionListener{
 
     private App view_app; 
     private Scanner scanner; 
+    private SemanticAnalizer semantic; 
     private Parser parser; 
     
-    public ControllerCompiler(App view_app, Scanner scanner, Parser parser) {
+    public ControllerCompiler(App view_app, Scanner scanner, Parser parser, SemanticAnalizer semantic) {
         this.view_app = view_app; 
         this.scanner = scanner; 
         this.parser = parser; 
+        this.semantic = semantic; 
         this.view_app.add_scanner_listeners(this);
     }
 
@@ -94,7 +96,7 @@ public class ControllerCompiler implements ActionListener{
             return;
         }
         if(e.getSource() == view_app.getSemantic_btn()) {
-            SemanticAnalizer semantic = new SemanticAnalizer(); 
+            semantic = new SemanticAnalizer(); 
             if(semantic.check_program(parser.getAst_root())) {
                 view_app.getSemantic_Area().setText("OK");
                 view_app.repaint();
@@ -104,6 +106,15 @@ public class ControllerCompiler implements ActionListener{
                 view_app.repaint();
                 view_app.revalidate();
             }
+            return; 
+        }
+        if(e.getSource() == view_app.getIntermediate_code_btn()) {
+            //saca el codigo intermedio y ponlo
+            ScopedSymbolTable table = semantic.getCurrent_symbol_table();
+
+            semantic.getCurrent_symbol_table().fill_all_symbols_arr(table);
+            semantic.getInt_code_generator().setSymbols(semantic.getCurrent_symbol_table().getAll_symbols());
+            this.view_app.getIntermediate_code_area().setText(semantic.getInt_code_generator().getCode());
         }
     }
 }

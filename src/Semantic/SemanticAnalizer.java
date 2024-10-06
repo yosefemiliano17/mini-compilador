@@ -7,6 +7,7 @@ import Ast.NodesAst.ReadNode;
 import Ast.NodesAst.VariableAssignmentNode;
 import Ast.NodesAst.VariableDeclarationNode;
 import Ast.NodesAst.WhileNode;
+import IntermediateCode.IntermediateCodeGenerator;
 import Lexical.TokenPair;
 import Utils.ScopedSymbolTable;
 import Utils.SymbolInfo;
@@ -14,15 +15,18 @@ import Lexical.Token;
 import java.util.HashSet; 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SemanticAnalizer {
 
     private ScopedSymbolTable current_symbol_table;
-    private HashSet<String> declarated_variables; 
+    private HashMap<String,Integer> variable_counter; 
+    private IntermediateCodeGenerator int_code_generator; 
 
     public SemanticAnalizer() {
         this.current_symbol_table = new ScopedSymbolTable(null);
-        this.declarated_variables = new HashSet<>(); 
+        this.variable_counter = new HashMap<>(); 
+        this.int_code_generator = new IntermediateCodeGenerator(); 
     }
 
     public boolean check_program(ASTNode node) {
@@ -35,7 +39,14 @@ public class SemanticAnalizer {
                 Token type = ((VariableDeclarationNode)neighbor).getType();  
                 System.out.println(id + " " + type);
                 if(!current_symbol_table.lookup(id)) {
-                    current_symbol_table.insert(id, new SymbolInfo(id, type));
+                    if(!variable_counter.containsKey(id)) {
+                        variable_counter.put(id, 1); 
+                        current_symbol_table.insert(id, new SymbolInfo(id, type, id));
+                    }else {
+                        current_symbol_table.insert(id, new SymbolInfo(id, type, id + variable_counter.get(id)));
+                        variable_counter.put(id, variable_counter.get(id) + 1); 
+                    }
+                    
                 }else {
                     return false; 
                 }
@@ -57,6 +68,10 @@ public class SemanticAnalizer {
                     return false;
                 }
 
+                //agregale el valor a el symbolo de la tabla de simbolos actual
+                //tal vez evaluar la expresion
+                current_symbol_table.getMap().get(id).setValue(exp.getExpression());
+
             }else if(neighbor instanceof IfNode) {
 
                 ExpressionNode exp = ((IfNode)neighbor).getExpression(); 
@@ -65,6 +80,7 @@ public class SemanticAnalizer {
                 }
 
                 ScopedSymbolTable new_symbol_table = new ScopedSymbolTable(current_symbol_table);
+                current_symbol_table.add_child_scope(new_symbol_table);
                 current_symbol_table = new_symbol_table; 
                 if(!check_program(neighbor)) {
                     return false; 
@@ -79,6 +95,7 @@ public class SemanticAnalizer {
                 }
 
                 ScopedSymbolTable new_symbol_table = new ScopedSymbolTable(current_symbol_table);
+                current_symbol_table.add_child_scope(new_symbol_table);
                 current_symbol_table = new_symbol_table; 
                 if(!check_program(neighbor)) {
                     return false; 
@@ -104,7 +121,6 @@ public class SemanticAnalizer {
         return true; 
     }
 
-    //checa si los identificadores son todos iguales y ademas checa si existen 
     public boolean check_ids(ArrayList<TokenPair> arr_expression) {
         Token type = null; 
         if(arr_expression.get(0).getToken() == Token.IDENTIFICADOR) {
@@ -240,6 +256,10 @@ public class SemanticAnalizer {
 
     public ScopedSymbolTable getCurrent_symbol_table() {
         return current_symbol_table;
+    }
+
+    public IntermediateCodeGenerator getInt_code_generator() {
+        return int_code_generator;
     }
 
 }

@@ -8,9 +8,9 @@ import java.io.File;
 
 public class App extends JFrame{
 
-    private JButton scanner_btn, file_btn, save_code_btn, parser_btn, semantic_btn; 
-    private JTextArea code_area, tokens_area, parser_area, semantic_Area;
-    private JLabel program_label, tokens_label, parser_label, semantic_label; 
+    private JButton scanner_btn, file_btn, save_code_btn, parser_btn, semantic_btn, intermediate_code_btn; 
+    private JTextArea code_area, tokens_area, parser_area, semantic_Area, intermediate_code_area;
+    private JLabel program_label, tokens_label, parser_label, semantic_label, intermediate_code_label; 
     private JFileChooser file_chooser; 
 
     public App() {
@@ -30,6 +30,9 @@ public class App extends JFrame{
         this.semantic_Area = new JTextArea();
         this.semantic_btn = new JButton("Semantico"); 
         this.semantic_label = new JLabel("Semantico:");
+        this.intermediate_code_area = new JTextArea(); 
+        this.intermediate_code_btn = new JButton("Codigo Intermedio");
+        this.intermediate_code_label = new JLabel("Cod Intermedio"); 
 
         File working_directory = new File(System.getProperty("user.dir"));
         file_chooser.setCurrentDirectory(working_directory); 
@@ -57,8 +60,34 @@ public class App extends JFrame{
         set_semantic_btn(); 
         set_semantic_label(); 
         set_semantic_area(); 
+        set_intermediate_code_area();
+        set_intermediate_code_btn();
+        set_intermediate_code_label();
 
         this.setVisible(true); 
+    }
+
+    public void set_intermediate_code_area() {
+        intermediate_code_area.setBounds(40, 530, 700, 300);
+        intermediate_code_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        intermediate_code_area.setFont(new Font("Monospaced", Font.PLAIN, 30));
+        intermediate_code_area.setEditable(false);
+
+        JScrollPane scroll = new JScrollPane(intermediate_code_area); 
+        scroll.setBounds(40, 530, 700, 300);
+        add(scroll); 
+    }
+
+    public void set_intermediate_code_label() {
+        intermediate_code_label.setFont(new Font("Arial", Font.BOLD, 20));
+        intermediate_code_label.setBounds(300, 470, 200, 70);
+        add(intermediate_code_label); 
+    }
+
+    public void set_intermediate_code_btn() {
+        intermediate_code_btn.setFont(new Font("Arial", Font.PLAIN, 20));
+        intermediate_code_btn.setBounds(800, 700, 150, 70);
+        add(intermediate_code_btn); 
     }
 
     public void set_semantic_btn() {
@@ -132,12 +161,12 @@ public class App extends JFrame{
     }
 
     public void set_code_area() {
-        code_area.setBounds(40, 70, 700, 720);
+        code_area.setBounds(40, 70, 700, 420);
         code_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        code_area.setFont(new Font("Arial", Font.PLAIN, 30));
+        code_area.setFont(new Font("Monospaced", Font.PLAIN, 30));
 
         JScrollPane scroll = new JScrollPane(code_area); 
-        scroll.setBounds(40, 70, 700, 720);
+        scroll.setBounds(40, 70, 700, 420);
         add(scroll);
     }
 
@@ -158,6 +187,7 @@ public class App extends JFrame{
         this.save_code_btn.addActionListener(listener); 
         this.parser_btn.addActionListener(listener);
         this.semantic_btn.addActionListener(listener);
+        this.intermediate_code_btn.addActionListener(listener);
     }
 
     public JButton getScanner_btn() {
@@ -198,6 +228,14 @@ public class App extends JFrame{
 
     public JButton getSemantic_btn() {
         return semantic_btn;
+    }
+
+    public JTextArea getIntermediate_code_area() {
+        return intermediate_code_area;
+    }
+
+    public JButton getIntermediate_code_btn() {
+        return intermediate_code_btn;
     }
 
 }
