@@ -1,0 +1,9 @@
+class ejemplo {
+    int velocidad; 
+    velocidad = 45;
+    if(velocidad == 45) {
+        string mensaje;
+        mensaje = "velocidad igual a 45"; 
+        print(mensaje);
+    }
+}

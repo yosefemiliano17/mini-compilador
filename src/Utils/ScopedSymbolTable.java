@@ -1,5 +1,8 @@
 package Utils;
 import java.util.HashMap;
+
+import Lexical.TokenPair;
+
 import java.util.ArrayList; 
 
 public class ScopedSymbolTable {
@@ -46,6 +49,16 @@ public class ScopedSymbolTable {
             aux_table = aux_table.enclosing_scope; 
         } while (aux_table != null);
         return false; 
+    }
+
+    public void assign_value(String id, ArrayList<TokenPair> value) {
+        ScopedSymbolTable aux_table = this; 
+        do {
+            if(aux_table.map.containsKey(id)) {
+                aux_table.map.get(id).setValue(value);
+            }
+            aux_table = aux_table.enclosing_scope; 
+        }while(aux_table != null); 
     }
 
     public void setEnclosing_scope(ScopedSymbolTable enclosing_scope) {

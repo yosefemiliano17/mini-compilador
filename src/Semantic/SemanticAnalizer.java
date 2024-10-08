@@ -46,7 +46,6 @@ public class SemanticAnalizer {
                         current_symbol_table.insert(id, new SymbolInfo(id, type, id + variable_counter.get(id)));
                         variable_counter.put(id, variable_counter.get(id) + 1); 
                     }
-                    
                 }else {
                     return false; 
                 }
@@ -68,9 +67,8 @@ public class SemanticAnalizer {
                     return false;
                 }
 
-                //agregale el valor a el symbolo de la tabla de simbolos actual
-                //tal vez evaluar la expresion
-                current_symbol_table.getMap().get(id).setValue(exp.getExpression());
+                //current_symbol_table.getMap().get(id).setValue(exp.getExpression());
+                current_symbol_table.assign_value(id, exp.getExpression());
 
             }else if(neighbor instanceof IfNode) {
 
