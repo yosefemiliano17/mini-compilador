@@ -220,18 +220,19 @@ public class SemanticAnalizer {
             if(arr_expression.size() == 1) {
                 TokenPair pair = arr_expression.get(0); 
                 if(pair.getToken() == Token.IDENTIFICADOR) {
-                    SymbolInfo info = current_symbol_table.getInfo(pair.getToken_str()); 
+                    SymbolInfo info = current_symbol_table.get_symbol_info(pair.getToken_str()); 
                     if(info == null || info.getType() != Token.BOOLEAN) {
                         return false; 
                     }
                 }
                 System.out.println(pair.getToken_str() + " " + pair.getToken());
-                if(pair.getToken() != Token.FALSE && pair.getToken() != Token.TRUE) {
+                if(pair.getToken() != Token.FALSE && pair.getToken() != Token.TRUE && pair.getToken() != Token.IDENTIFICADOR) {
                     return false; 
                 }
                 return true; 
             }else {
-                HashSet<Token> tokens = new HashSet<>();
+                //aqui quita todo y nomas pon un return false
+                /*HashSet<Token> tokens = new HashSet<>();
                 tokens.add(Token.MENOR_QUE); 
                 tokens.add(Token.MAYOR_QUE); 
                 tokens.add(Token.COMPARADOR_IGUAL); 
@@ -250,7 +251,8 @@ public class SemanticAnalizer {
                         }
                     }
                 }
-                return true; 
+                return true; */
+                return false; 
             }
         }else if(type == Token.INT){
             HashSet<Token> bad_tokens = new HashSet<>();

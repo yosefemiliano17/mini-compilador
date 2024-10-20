@@ -48,6 +48,20 @@ public class IntermediateCodeGenerator {
                 dotCode += "       MOV [" + id + "+" + (i-2) + "], " + "'" + value.charAt(i-1) + "'" + "\n"; 
             }
             dotCode += "       MOV [" + id + "+" + (i-2) + "], " + "'$'" + "\n"; 
+        }else {
+            //es booleano
+            Token value = expression.get(0).getToken(); 
+            if(value == Token.IDENTIFICADOR) {
+                dotCode += "       MOV AX, " + expression.get(0).getToken_str() + "\n";
+                dotCode += "       MOV " + id + ", AX\n";
+            }else {
+                if(value == Token.FALSE) {
+                    dotCode += "       MOV " + id + ", false\n";
+                }else {
+                    dotCode += "       MOV " + id + ", true\n";
+                }
+            }
+            
         }
 
     }
@@ -214,6 +228,8 @@ public class IntermediateCodeGenerator {
         int max_len = Math.max(symbols.get(0).getId().length(), symbols.get(0).getUnique_name().length()); 
 
         code += "       .DATA\n";
+        code += "true" + " ".repeat(max_len + 1) + "DB     1\n"; 
+        code += "false" + " ".repeat(max_len) + "DB     0\n" ;
 
         for (SymbolInfo symbol : symbols) {
             int len1 = symbol.getId().length(); 
