@@ -114,7 +114,7 @@ public class ControllerCompiler implements ActionListener{
 
             semantic.getCurrent_symbol_table().fill_all_symbols_arr(table);
             semantic.getInt_code_generator().setSymbols(semantic.getCurrent_symbol_table().getAll_symbols());
-            this.view_app.getIntermediate_code_area().setText(semantic.getInt_code_generator().getCode());
+            this.view_app.getIntermediate_code_area().setText(semantic.getInt_code_generator().getAllCode());
         }
     }
 }

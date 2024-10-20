@@ -22,11 +22,14 @@ public class SemanticAnalizer {
     private ScopedSymbolTable current_symbol_table;
     private HashMap<String,Integer> variable_counter; 
     private IntermediateCodeGenerator int_code_generator; 
+    private int while_cont, if_cont; 
 
     public SemanticAnalizer() {
         this.current_symbol_table = new ScopedSymbolTable(null);
         this.variable_counter = new HashMap<>(); 
         this.int_code_generator = new IntermediateCodeGenerator(); 
+        this.while_cont = 0; 
+        this.if_cont = 0; 
     }
 
     public boolean check_program(ASTNode node) {
@@ -37,7 +40,6 @@ public class SemanticAnalizer {
 
                 String id = ((VariableDeclarationNode)neighbor).getId(); 
                 Token type = ((VariableDeclarationNode)neighbor).getType();  
-                System.out.println(id + " " + type);
                 if(!current_symbol_table.lookup(id)) {
                     if(!variable_counter.containsKey(id)) {
                         variable_counter.put(id, 1); 
@@ -61,16 +63,22 @@ public class SemanticAnalizer {
                 ExpressionNode exp = ((VariableAssignmentNode)neighbor).getExpression(); 
                 SymbolInfo info = current_symbol_table.get_symbol_info(id); 
                 Token type = info.getType(); 
-                System.out.println("var assignment " + id + " " + type);
 
                 if(!check_expression(exp.getExpression(), type)) {
                     return false;
                 }
 
-                //current_symbol_table.getMap().get(id).setValue(exp.getExpression());
                 current_symbol_table.assign_value(id, exp.getExpression());
 
+                int_code_generator.generateVariableAssignment(type, id, exp.getExpression());
+
             }else if(neighbor instanceof IfNode) {
+
+                if_cont++; 
+
+                ((IfNode)neighbor).setId(if_cont);
+
+                System.out.println("If id " + ((IfNode)neighbor).getId());
 
                 ExpressionNode exp = ((IfNode)neighbor).getExpression(); 
                 if(!check_block_expression(exp.getExpression())) {
@@ -80,12 +88,23 @@ public class SemanticAnalizer {
                 ScopedSymbolTable new_symbol_table = new ScopedSymbolTable(current_symbol_table);
                 current_symbol_table.add_child_scope(new_symbol_table);
                 current_symbol_table = new_symbol_table; 
+
+                int_code_generator.generateIf(((IfNode)neighbor).getId(), exp.getExpression());
+
                 if(!check_program(neighbor)) {
                     return false; 
                 }
+                int_code_generator.setCode(int_code_generator.getCode() + "\n" + "END_IF" + ((IfNode)neighbor).getId() + ":\n");
+
                 current_symbol_table = current_symbol_table.getEnclosing_scope();
 
             }else if(neighbor instanceof WhileNode) {
+
+                while_cont++; 
+
+                ((WhileNode)neighbor).setId(while_cont);
+
+                System.out.println("While id " + ((WhileNode)neighbor).getId());
 
                 ExpressionNode exp = ((WhileNode)neighbor).getExpression(); 
                 if(!check_block_expression(exp.getExpression())) {
@@ -95,17 +114,28 @@ public class SemanticAnalizer {
                 ScopedSymbolTable new_symbol_table = new ScopedSymbolTable(current_symbol_table);
                 current_symbol_table.add_child_scope(new_symbol_table);
                 current_symbol_table = new_symbol_table; 
+
+                int_code_generator.generateWhile(((WhileNode)neighbor).getId(), exp.getExpression());
+
                 if(!check_program(neighbor)) {
                     return false; 
                 }
+
+                int_code_generator.setCode(int_code_generator.getCode() + "\n" + "       JMP " + 
+                "BEGIN_WHILE" + while_cont + "\n\nEND_WHILE" + while_cont + ":\n");
                 current_symbol_table = current_symbol_table.getEnclosing_scope();
 
             }else if(neighbor instanceof PrintNode) {
 
                 String id = ((PrintNode)neighbor).getId(); 
+                Token type = current_symbol_table.get_symbol_info(id).getType(); 
+                if(type == Token.BOOLEAN) {
+                    return false; 
+                }
                 if(!current_symbol_table.lookup(id)) {
                     return false;
                 }
+                int_code_generator.generatePrint(type, id);
 
             }else if(neighbor instanceof ReadNode) {
 
@@ -223,7 +253,6 @@ public class SemanticAnalizer {
                 return true; 
             }
         }else if(type == Token.INT){
-            //INT
             HashSet<Token> bad_tokens = new HashSet<>();
             bad_tokens.add(Token.MENOR_QUE); 
             bad_tokens.add(Token.MAYOR_QUE); 
@@ -231,7 +260,6 @@ public class SemanticAnalizer {
             bad_tokens.add(Token.FALSE); 
             bad_tokens.add(Token.TRUE); 
             for(TokenPair tok : arr_expression) {
-                System.out.println(tok.getToken_str() + " " + tok.getToken());
                 if(bad_tokens.contains(tok.getToken())) {
                     System.out.println("entro");
                     return false; 
