@@ -89,7 +89,8 @@ public class SemanticAnalizer {
                 current_symbol_table.add_child_scope(new_symbol_table);
                 current_symbol_table = new_symbol_table; 
 
-                int_code_generator.generateIf(((IfNode)neighbor).getId(), exp.getExpression());
+                Token ty = get_expression_type(exp.getExpression());
+                int_code_generator.generateIf(((IfNode)neighbor).getId(), exp.getExpression(), ty);
 
                 if(!check_program(neighbor)) {
                     return false; 
@@ -115,7 +116,8 @@ public class SemanticAnalizer {
                 current_symbol_table.add_child_scope(new_symbol_table);
                 current_symbol_table = new_symbol_table; 
 
-                int_code_generator.generateWhile(((WhileNode)neighbor).getId(), exp.getExpression());
+                Token ty = get_expression_type(exp.getExpression());
+                int_code_generator.generateWhile(((WhileNode)neighbor).getId(), exp.getExpression(), ty);
 
                 if(!check_program(neighbor)) {
                     return false; 
@@ -166,6 +168,16 @@ public class SemanticAnalizer {
             }
         }
         return true; 
+    }
+
+    public Token get_expression_type(ArrayList<TokenPair> expression) {
+        if(expression.get(0).getToken() == Token.IDENTIFICADOR) {
+            return current_symbol_table.get_symbol_info(expression.get(0).getToken_str()).getType(); 
+        }
+        if (expression.get(0).getToken() == Token.FALSE || expression.get(0).getToken() == Token.TRUE) {
+            return Token.BOOLEAN; 
+        }
+        return Token.INT;
     }
 
     public boolean check_block_expression(ArrayList<TokenPair> arr_expression) {

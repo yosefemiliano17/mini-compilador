@@ -52,13 +52,15 @@ public class IntermediateCodeGenerator {
             //es booleano
             Token value = expression.get(0).getToken(); 
             if(value == Token.IDENTIFICADOR) {
-                dotCode += "       MOV AX, " + expression.get(0).getToken_str() + "\n";
-                dotCode += "       MOV " + id + ", AX\n";
+                dotCode += "       MOV AL, " + expression.get(0).getToken_str() + "\n";
+                dotCode += "       MOV " + id + ", AL\n";
             }else {
                 if(value == Token.FALSE) {
-                    dotCode += "       MOV " + id + ", false\n";
+                    dotCode += "       MOV AL, false\n"; 
+                    dotCode += "       MOV " + id + ", AL\n";
                 }else {
-                    dotCode += "       MOV " + id + ", true\n";
+                    dotCode += "       MOV AL, true\n"; 
+                    dotCode += "       MOV " + id + ", AL\n";
                 }
             }
             
@@ -66,7 +68,7 @@ public class IntermediateCodeGenerator {
 
     }
 
-    public void generateIf(int if_id, ArrayList<TokenPair> expression) {
+    public void generateIf(int if_id, ArrayList<TokenPair> expression, Token type) {
         ArrayList<TokenPair> op1 = new ArrayList<>();
         ArrayList<TokenPair> op2 = new ArrayList<>();  
         boolean flag = false; 
@@ -95,29 +97,31 @@ public class IntermediateCodeGenerator {
             }
         }
 
-        dotCode += "       MOV AX, " + op1.get(0).getToken_str() + '\n'; 
+        String register = (type == Token.BOOLEAN) ? "L" : "X"; 
+
+        dotCode += "       MOV A" + register + ", " + op1.get(0).getToken_str() + '\n'; 
         for(int i = 1; i < op1.size(); i++) {
             if(op1.get(i).getToken() == Token.SUMA){
-                dotCode += "       ADD AX" + ", " + op1.get(i+1).getToken_str() + "\n";  
+                dotCode += "       ADD A"+register+", " + op1.get(i+1).getToken_str() + "\n";  
                 i++; 
             }else if(op1.get(i).getToken() == Token.RESTA) {
-                dotCode += "       SUB AX" + ", " + op1.get(i+1).getToken_str() + "\n";  
+                dotCode += "       SUB A"+register+", " + op1.get(i+1).getToken_str() + "\n";  
                 i++; 
             }
         }
         dotCode += '\n'; 
-        dotCode += "       MOV BX, " + op2.get(0).getToken_str() + "\n"; 
+        dotCode += "       MOV B" + register + ", " + op2.get(0).getToken_str() + '\n'; 
         for(int i = 1; i < op2.size(); i++) {
             if(op2.get(i).getToken() == Token.SUMA){
-                dotCode += "       ADD BX" + ", " + op2.get(i+1).getToken_str() + "\n";  
+                dotCode += "       ADD B"+register+", " + op2.get(i+1).getToken_str() + "\n";  
                 i++; 
             }else if(op2.get(i).getToken() == Token.RESTA) {
-                dotCode += "       SUB BX" + ", " + op2.get(i+1).getToken_str() + "\n";  
+                dotCode += "       ADD B"+register+", " + op2.get(i+1).getToken_str() + "\n";  
                 i++; 
             }
         }
 
-        dotCode += "       CMP AX, BX\n"; 
+        dotCode += "       CMP A"+register+", B" +register + "\n"; 
         if(operator == Token.MAYOR_QUE) {
             dotCode += "       JLE END_IF" + if_id + "\n"; 
         }else if(operator == Token.MENOR_QUE) {
@@ -144,7 +148,7 @@ public class IntermediateCodeGenerator {
         }
     }
 
-    public void generateWhile(int while_id, ArrayList<TokenPair> expression) {
+    public void generateWhile(int while_id, ArrayList<TokenPair> expression, Token type) {
         ArrayList<TokenPair> op1 = new ArrayList<>(); 
         ArrayList<TokenPair> op2 = new ArrayList<>();
 
@@ -175,29 +179,31 @@ public class IntermediateCodeGenerator {
             }
         }
 
-        dotCode += "       MOV AX, " + op1.get(0).getToken_str() + '\n'; 
+        String register = (type == Token.BOOLEAN) ? "L" : "X"; 
+
+        dotCode += "       MOV A" + register + ", " + op1.get(0).getToken_str() + '\n'; 
         for(int i = 1; i < op1.size(); i++) {
             if(op1.get(i).getToken() == Token.SUMA){
-                dotCode += "       ADD AX" + ", " + op1.get(i+1).getToken_str() + "\n";  
+                dotCode += "       ADD A"+register+", " + op1.get(i+1).getToken_str() + "\n";  
                 i++; 
             }else if(op1.get(i).getToken() == Token.RESTA) {
-                dotCode += "       SUB AX" + ", " + op1.get(i+1).getToken_str() + "\n";  
+                dotCode += "       SUB A"+register+", " + op1.get(i+1).getToken_str() + "\n";  
                 i++; 
             }
         }
         dotCode += '\n'; 
-        dotCode += "       MOV BX, " + op2.get(0).getToken_str() + "\n"; 
+        dotCode += "       MOV B" + register + ", " + op2.get(0).getToken_str() + '\n'; 
         for(int i = 1; i < op2.size(); i++) {
             if(op2.get(i).getToken() == Token.SUMA){
-                dotCode += "       ADD BX" + ", " + op2.get(i+1).getToken_str() + "\n";  
+                dotCode += "       ADD B"+register+", " + op2.get(i+1).getToken_str() + "\n";  
                 i++; 
             }else if(op2.get(i).getToken() == Token.RESTA) {
-                dotCode += "       SUB BX" + ", " + op2.get(i+1).getToken_str() + "\n";  
+                dotCode += "       ADD B"+register+", " + op2.get(i+1).getToken_str() + "\n";  
                 i++; 
             }
         }
 
-        dotCode += "       CMP AX, BX\n"; 
+        dotCode += "       CMP A"+register+", B" +register + "\n"; 
         if(operator == Token.MAYOR_QUE) {
             dotCode += "       JLE END_WHILE" + while_id + "\n"; 
         }else if(operator == Token.MENOR_QUE) {
@@ -208,7 +214,7 @@ public class IntermediateCodeGenerator {
     }
 
     public void generateRead() {
-
+        //no se hace
     }
 
     public String getData() {
