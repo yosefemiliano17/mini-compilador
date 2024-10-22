@@ -143,8 +143,36 @@ public class IntermediateCodeGenerator {
             dotCode += "       MOV DL, 0AH\n"; 
             dotCode += "       INT 21H\n"; 
         }else {
-            //es entero y haz el cagadero
-            
+            dotCode += "       MOV DL, 10\n";
+            dotCode += "       MOV AX, " + id + "\n";
+            dotCode += "       DIV DL\n"; 
+            dotCode += "       ADD AH, 48\n"; 
+            dotCode += "       MOV NUM[4], AH\n"; 
+            dotCode += "       CBW\n"; 
+            dotCode += "       DIV DL\n"; 
+            dotCode += "       ADD AH, 48\n"; 
+            dotCode += "       MOV NUM[3], AH\n"; 
+            dotCode += "       CBW\n";
+            dotCode += "       DIV DL\n"; 
+            dotCode += "       ADD AH, 48\n"; 
+            dotCode += "       MOV NUM[2], AH\n";
+            dotCode += "       CBW\n"; 
+            dotCode += "       DIV DL\n"; 
+            dotCode += "       ADD AH, 48\n"; 
+            dotCode += "       MOV NUM[1], AH\n";   
+            dotCode += "       CBW\n"; 
+            dotCode += "       DIV DL\n"; 
+            dotCode += "       ADD AH, 48\n"; 
+            dotCode += "       MOV NUM[0], AH\n"; 
+            dotCode += "       MOV BX, 0001H\n";
+            dotCode += "       LEA DX, NUM\n"; 
+            dotCode += "       MOV AH, 09H\n"; 
+            dotCode += "       INT 21H\n\n"; 
+            dotCode += "       MOV AH, 02H\n";
+            dotCode += "       MOV DL, 0DH\n"; 
+            dotCode += "       INT 21H\n"; 
+            dotCode += "       MOV DL, 0AH\n"; 
+            dotCode += "       INT 21H\n"; 
         }
     }
 
@@ -213,10 +241,6 @@ public class IntermediateCodeGenerator {
         }
     }
 
-    public void generateRead() {
-        //no se hace
-    }
-
     public String getData() {
         String code = ""; 
 
@@ -236,6 +260,7 @@ public class IntermediateCodeGenerator {
         code += "       .DATA\n";
         code += "true" + " ".repeat(max_len + 1) + "DB     1\n"; 
         code += "false" + " ".repeat(max_len) + "DB     0\n" ;
+        code += "NUM" + " ".repeat(max_len + 2) + "DB     6 dup(\"$\")\n"; 
 
         for (SymbolInfo symbol : symbols) {
             int len1 = symbol.getId().length(); 
