@@ -1,0 +1,8 @@
+class ejemplo {
+    int a; 
+    int b; 
+    b = 12; 
+    a = 45; 
+    int suma; 
+    suma = a + b; 
+}

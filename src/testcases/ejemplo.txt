@@ -1,0 +1,8 @@
+class ejemplo {
+    int velocidad; 
+    velocidad = 5;
+    if(velocidad == 5) {
+        velocidad = 23;
+        velocidad = velocidad + 34;
+    }
+}

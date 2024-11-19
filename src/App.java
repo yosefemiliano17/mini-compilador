@@ -37,7 +37,7 @@ public class App extends JFrame{
         this.intermediate_code_label = new JLabel("Cod Intermedio"); 
         this.object_code_area = new JTextArea(); 
         this.object_code_btn = new JButton("Codigo Objeto");
-        this.object_code_lbl = new JLabel("Codigo Objeto"); 
+        this.object_code_lbl = new JLabel("Cod Objeto"); 
 
         File working_directory = new File(System.getProperty("user.dir"));
         file_chooser.setCurrentDirectory(working_directory); 
@@ -93,7 +93,9 @@ public class App extends JFrame{
     }
 
     public void set_object_code_lbl() {
-        
+        object_code_lbl.setFont(new Font("Arial", Font.BOLD, 20));
+        object_code_lbl.setBounds(760, 470, 200, 70);
+        add(object_code_lbl); 
     }
 
     public void set_intermediate_code_area() {
@@ -109,7 +111,7 @@ public class App extends JFrame{
 
     public void set_intermediate_code_label() {
         intermediate_code_label.setFont(new Font("Arial", Font.BOLD, 20));
-        intermediate_code_label.setBounds(300, 470, 200, 70);
+        intermediate_code_label.setBounds(250, 470, 200, 70);
         add(intermediate_code_label); 
     }
 

@@ -55,11 +55,7 @@ public class ObjectCodeGenerator {
         encodings.get("DIV").put(InstructionFormat.REG, "1111 0110 11 110 reg"); 
 
         encodings.put("LEA", new HashMap<>());
-        //encodings.get("LEA").put(, ""); 
-
-        //FALTA EL INT 21H
-
-        //dejemos los jump para ahorita
+        //encodings.get("LEA").put(, "");
     }
 
     public boolean binary_string(String str) {
@@ -102,14 +98,14 @@ public class ObjectCodeGenerator {
     }
 
     public String get_encoding(String operation, InstructionFormat type, int offset) {
-        String binary = "00A0 : " + get_hex(offset) + " "; 
-
+        String prefix = "00A0 : " + get_hex(offset) + " "; 
+        String binary = ""; 
         if(operation.equals("CBW")) {
-            binary += CBW_ENCODING + '\n'; 
+            binary += CBW_ENCODING; 
             return binary; 
         }
         if(operation.equals("INT 21H")) {
-            binary += INT_21H + '\n'; 
+            binary += INT_21H; 
             return binary; 
         }
 
@@ -121,69 +117,118 @@ public class ObjectCodeGenerator {
                 char w = (operation_arr[1].charAt(1) == 'L') ? '0' : '1'; 
                 String regi = reg.get(operation_arr[1]).getBin_reg(); 
                 String r_m = reg.get(operation_arr[1]).getR_m();
-                binary += "1000 101" + w + " 11 " + regi + " " + r_m; 
+                String str_offset = get_offset(offsets.get(operation_arr[2])); 
+                binary += "1000101" + w + "11" + regi + r_m + str_offset; 
             }
             if(type == InstructionFormat.REG_IMM) {
                 String regi = reg.get(operation_arr[1]).getBin_reg(); 
                 int w = (operation_arr[1].charAt(operation_arr[1].length()-1) == 'L') ? 0 : 1; 
-                int val = Integer.parseInt(operation_arr[2]); 
-                binary += "1100 0111 11 000 " + regi + " " + get_bin(val,w);
+                int val; 
+                String val_str = ""; 
+                if(operation_arr[2].charAt(operation_arr[2].length()-1) == 'H') {
+                    val_str = hexToBin(operation_arr[2].substring(0,operation_arr[2].length()-1)); 
+                }else {
+                    val = Integer.parseInt(operation_arr[2]); 
+                    val_str = get_bin(val, w); 
+                }
+                binary += "1100011111000" + regi + val_str;
             }
             if(type == InstructionFormat.MEM_REG) {
                 String regi = reg.get(operation_arr[2]).getBin_reg(); 
                 String r_m = reg.get(operation_arr[2]).getR_m(); 
                 String str_offset = get_offset(offsets.get(operation_arr[1]));
 
-                binary += "1000 1001 11 " + regi + " " + r_m + " " + str_offset; 
+                binary += "1000100111" + regi + r_m + str_offset; 
             }
             if(type == InstructionFormat.MEM_IMM) {
                 char w = (is_char(operation_arr[2])) ? '0' : '1'; 
-                String str_offset = get_offset(offsets.get(operation_arr[1]));
+                String str_offset = ""; 
                 int val = 0; 
+                //System.out.println(is_char(operation_arr[2]) + " " + operation_arr[2]);
                 if(is_char(operation_arr[2])) {
+                    String op_aux = operation_arr[1].substring(1,operation_arr[1].length()-1); 
+                    String[] op_aux_arr = op_aux.split("\\+"); 
                     val = operation_arr[2].charAt(1); 
+                    if (op_aux_arr.length == 1) {
+                        str_offset = get_offset(offsets.get(op_aux_arr[0])); 
+                    }else {
+                        str_offset = get_offset(offsets.get(op_aux_arr[0]) + Integer.parseInt(op_aux_arr[1])); 
+                    }
+                    
                 }else {
+                    str_offset = get_offset(offsets.get(operation_arr[1]));
                     val = Integer.parseInt(operation_arr[2]); 
                 }
-                binary += "1100 011 " + w + " " + "00 000 101 " + str_offset + " " + get_bin(val, w - '0');
+                binary += "1100011" + w + "00000101" + str_offset + get_bin(val, w - '0');
             }
             if(type == InstructionFormat.AREG_MEM) {
                 String str_offset = get_offset(offsets.get(operation_arr[2]));
-                binary += "1010 0001 " + str_offset; 
+                binary += "10100001" + str_offset; 
             }
         }
         if(operation_arr[0].equals("ADD")) {
-            if(type == InstructionFormat.REG_MEM) {
-                
+            operation_arr[1] = operation_arr[1].substring(0,operation_arr[1].length()-1); 
+            if(type == InstructionFormat.REG_MEM) { 
+                String regi = reg.get(operation_arr[1]).getBin_reg(); 
+                String r_m = reg.get(operation_arr[1]).getR_m();
+                String str_offset = get_offset(offsets.get(operation_arr[2])); 
+                binary += "0000001100" + regi + r_m + str_offset; 
             }
             if(type == InstructionFormat.REG_IMM) {
-                
+                String regi = reg.get(operation_arr[1]).getBin_reg(); 
+                int val = Integer.parseInt(operation_arr[2]); 
+                binary += "1000001111000" + regi + get_bin(val, 1); 
+            }
+            if(is_areg(operation_arr[1]) && is_mem(operation_arr[2])) {
+                String str_offset = get_offset(offsets.get(operation_arr[2])); 
+                binary += "10100001" + str_offset; 
             }
             if(type == InstructionFormat.AREG_IMM) {
-                
+                int val = Integer.parseInt(operation_arr[2]); 
+                binary += "00000101" + get_bin(val, 1); 
             }
         }
         if(operation_arr[0].equals("SUB")) {
+            operation_arr[1] = operation_arr[1].substring(0,operation_arr[1].length()-1); 
             if(type == InstructionFormat.REG_MEM) {
-                
+                String regi = reg.get(operation_arr[1]).getBin_reg(); 
+                String r_m = reg.get(operation_arr[1]).getR_m();
+                String str_offset = get_offset(offsets.get(operation_arr[2])); 
+                binary += "0010101100" + regi+ r_m + str_offset; 
             }
             if(type == InstructionFormat.REG_IMM) {
-                
+                String regi = reg.get(operation_arr[1]).getBin_reg(); 
+                int val = Integer.parseInt(operation_arr[2]); 
+                binary += "1000001111101" + regi+ get_bin(val, 1); 
             }
             if(type == InstructionFormat.AREG_IMM) {
-                
+                int val = Integer.parseInt(operation_arr[2]); 
+                binary += "00101101" + get_bin(val, 1);    
             }
         }
         if(operation_arr[0].equals("CMP")) {
-            binary += "0011 1001 1100 0011"; 
+            binary += "0011100111000011"; 
         }
         if(operation_arr[0].equals("DIV")) {
-            binary += "1111 0110 1111 0010";
+            binary += "1111011011110010";
         }
+        if(operation_arr[0].equals("JNE"))  {
+            binary += "01110101"; 
+        }
+        if(operation_arr[0].equals("JGE")) {
+            binary += "01111101"; 
+        }
+        if(operation_arr[0].equals("JLE")) {
+            binary += "01111110"; 
+        }
+        if(binary.isEmpty()) {
+            return prefix; 
+        }
+        return prefix + group_nibbles(binary); 
+    }
 
-        //FALTAN JUMPS
-        
-        return binary + '\n'; 
+    public boolean is_label(String str) {
+        return str.charAt(str.length()-1) == ':' ;
     }
 
     public String generate() {
@@ -220,17 +265,50 @@ public class ObjectCodeGenerator {
 
 
         String[] code = get_code().split("\n"); 
-        int offset_code = 0; 
+        int offset_code = 0, start = -1, end = -1; 
+        int pos = 0; 
+        ArrayList<String> binary_code = new ArrayList<>(); 
         for(int i = 0; i < code.length; i++) {
             if(code[i].isEmpty()) {
                 continue; 
             }
+
             InstructionFormat format = get_instruction_format(code[i]); 
+
+            String[] code_arr = code[i].split("\\s+"); 
+
+            if(is_jcc(code_arr[0])) {
+                start = offset_code; 
+                pos = i; 
+            }
+
+            if(is_label(code_arr[0])) {
+                end = offset_code; 
+            }
+
             String encoding = get_encoding(code[i], format, offset_code); 
-            object_code += encoding; 
+
+            binary_code.add(encoding); 
+
+
+            //object_code += encoding; 
             offset_code += bytes(encoding); 
         }
-        return object_code;  
+
+        if(start > -1) {
+            int jump = end - start - 1; 
+            String jump_bytes = get_bin(jump, 0);
+            binary_code.set(pos-1, binary_code.get(pos-1) + " " + group_nibbles(jump_bytes)); 
+        }
+        String answer = ""; 
+        for (String string : binary_code) {
+            answer += string + '\n'; 
+        }
+        return object_code + "\n" + answer;  
+    }
+
+    public boolean is_jcc(String op) {
+        return op.equals("JNE") || op.equals("JLE") || op.equals("JGE"); 
     }
 
     public String getIntermediate_code() {
@@ -334,7 +412,42 @@ public class ObjectCodeGenerator {
         for(int i = 0; i < len; i++) {
             zeros += '0'; 
         }
-        return zeros + aux_bin; 
+
+        return little_en(zeros + aux_bin); 
+    }
+
+    public String little_en(String str) {
+        String resp = "";
+        str += "$";
+        ArrayList<String> arr = new ArrayList<>(); 
+        for(int i = 1; i <= str.length(); i++) {
+            if(i % 8 == 0) {
+                resp += str.charAt(i-1); 
+                arr.add(resp); 
+                resp = ""; 
+                continue; 
+            }
+            resp += str.charAt(i-1); 
+
+        } 
+        resp = "";
+        for (int i = arr.size()-1; i >= 0; i--) {
+            resp += arr.get(i); 
+        }
+        return resp; 
+    }
+
+    private String group_nibbles(String str) {
+        String resp = ""; 
+        for(int i = 1; i <= str.length(); i++) {
+            if(i % 4 == 0) {
+                resp += str.charAt(i-1) ;
+                resp += " ";
+            }else {
+                resp += str.charAt(i-1); 
+            }
+        }
+        return resp; 
     }
 
     private int bytes(String encoding) {
@@ -361,7 +474,7 @@ public class ObjectCodeGenerator {
             zeros += '0'; 
         }
         String complete_hex = zeros + aux_hex; 
-        return hexToBin(complete_hex);
+        return little_en(hexToBin(complete_hex));
     }
 
 

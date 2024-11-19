@@ -124,6 +124,8 @@ public class ControllerCompiler implements ActionListener{
             this.view_app.getObject_code_area().setText(obj_str);
             this.view_app.repaint();
             this.view_app.revalidate(); 
+
+            System.out.println(obj_gen.little_en("0000000111110000"));
         }
     }
 }

@@ -3,7 +3,7 @@ class ejemplo {
     velocidad = 45;
     if(velocidad == 45) {
         string mensaje;
-        mensaje = "velocidad igual a 45"; 
+        mensaje = "velocidad_igual_a_45"; 
         print(mensaje);
     }
 }
