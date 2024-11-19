@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import javax.swing.*;
 
 import Lexical.Scanner;
+import ObjectCode.ObjectCodeGenerator;
 import Semantic.SemanticAnalizer;
 import Syntactic.Parser;
 import Utils.ScopedSymbolTable;
@@ -109,12 +110,20 @@ public class ControllerCompiler implements ActionListener{
             return; 
         }
         if(e.getSource() == view_app.getIntermediate_code_btn()) {
-            //saca el codigo intermedio y ponlo
             ScopedSymbolTable table = semantic.getCurrent_symbol_table();
 
             semantic.getCurrent_symbol_table().fill_all_symbols_arr(table);
             semantic.getInt_code_generator().setSymbols(semantic.getCurrent_symbol_table().getAll_symbols());
             this.view_app.getIntermediate_code_area().setText(semantic.getInt_code_generator().getAllCode());
+            return; 
+        }
+        if(e.getSource() == view_app.getObject_code_btn()) {
+            String intermediate_code = view_app.getIntermediate_code_area().getText(); 
+            ObjectCodeGenerator obj_gen = new ObjectCodeGenerator(intermediate_code); 
+            String obj_str = obj_gen.generate(); 
+            this.view_app.getObject_code_area().setText(obj_str);
+            this.view_app.repaint();
+            this.view_app.revalidate(); 
         }
     }
 }

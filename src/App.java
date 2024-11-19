@@ -1,5 +1,7 @@
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -8,9 +10,9 @@ import java.io.File;
 
 public class App extends JFrame{
 
-    private JButton scanner_btn, file_btn, save_code_btn, parser_btn, semantic_btn, intermediate_code_btn; 
-    private JTextArea code_area, tokens_area, parser_area, semantic_Area, intermediate_code_area;
-    private JLabel program_label, tokens_label, parser_label, semantic_label, intermediate_code_label; 
+    private JButton scanner_btn, file_btn, save_code_btn, parser_btn, semantic_btn, intermediate_code_btn, object_code_btn; 
+    private JTextArea code_area, tokens_area, parser_area, semantic_Area, intermediate_code_area, object_code_area;
+    private JLabel program_label, tokens_label, parser_label, semantic_label, intermediate_code_label, object_code_lbl; 
     private JFileChooser file_chooser; 
 
     public App() {
@@ -33,6 +35,9 @@ public class App extends JFrame{
         this.intermediate_code_area = new JTextArea(); 
         this.intermediate_code_btn = new JButton("Codigo Intermedio");
         this.intermediate_code_label = new JLabel("Cod Intermedio"); 
+        this.object_code_area = new JTextArea(); 
+        this.object_code_btn = new JButton("Codigo Objeto");
+        this.object_code_lbl = new JLabel("Codigo Objeto"); 
 
         File working_directory = new File(System.getProperty("user.dir"));
         file_chooser.setCurrentDirectory(working_directory); 
@@ -41,7 +46,7 @@ public class App extends JFrame{
     }
 
     public void set_frame() {
-        setSize(1500, 900);
+        setSize(1730, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocationRelativeTo(null);
@@ -63,18 +68,42 @@ public class App extends JFrame{
         set_intermediate_code_area();
         set_intermediate_code_btn();
         set_intermediate_code_label();
+        set_object_code_area();
+        set_object_code_btn();
+        set_object_code_lbl();
 
         this.setVisible(true); 
     }
 
+    public void set_object_code_area() {
+        object_code_area.setBounds(550, 530, 600, 300);
+        object_code_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        object_code_area.setFont(new Font("Monospaced", Font.PLAIN, 30));
+        object_code_area.setEditable(false);
+
+        JScrollPane scroll = new JScrollPane(object_code_area); 
+        scroll.setBounds(550, 530, 600, 300);
+        add(scroll); 
+    }
+
+    public void set_object_code_btn() {
+        object_code_btn.setFont(new Font("Arial", Font.PLAIN, 20));
+        object_code_btn.setBounds(1200, 800, 150, 70);
+        add(object_code_btn); 
+    }
+
+    public void set_object_code_lbl() {
+        
+    }
+
     public void set_intermediate_code_area() {
-        intermediate_code_area.setBounds(40, 530, 700, 300);
+        intermediate_code_area.setBounds(40, 530, 500, 300);
         intermediate_code_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         intermediate_code_area.setFont(new Font("Monospaced", Font.PLAIN, 30));
         intermediate_code_area.setEditable(false);
 
         JScrollPane scroll = new JScrollPane(intermediate_code_area); 
-        scroll.setBounds(40, 530, 700, 300);
+        scroll.setBounds(40, 530, 500, 300);
         add(scroll); 
     }
 
@@ -86,24 +115,24 @@ public class App extends JFrame{
 
     public void set_intermediate_code_btn() {
         intermediate_code_btn.setFont(new Font("Arial", Font.PLAIN, 20));
-        intermediate_code_btn.setBounds(800, 700, 150, 70);
+        intermediate_code_btn.setBounds(1200, 700, 150, 70);
         add(intermediate_code_btn); 
     }
 
     public void set_semantic_btn() {
         semantic_btn.setFont(new Font("Arial", Font.PLAIN, 27));
-        semantic_btn.setBounds(800, 600, 150, 70);
+        semantic_btn.setBounds(1200, 600, 150, 70);
         add(semantic_btn); 
     }
 
     public void set_semantic_label() {
         semantic_label.setFont(new Font("Arial", Font.BOLD, 20));
-        semantic_label.setBounds(1180, 623, 120, 70);
+        semantic_label.setBounds(1580, 623, 120, 70);
         add(semantic_label); 
     }
 
     public void set_semantic_area() {
-        semantic_Area.setBounds(1020, 690, 440, 100);
+        semantic_Area.setBounds(1420, 690, 350, 100);
         semantic_Area.setBorder(BorderFactory.createLineBorder(Color.black));
         semantic_Area.setFont(new Font("Arial", Font.PLAIN, 17));
         semantic_Area.setEditable(false);
@@ -112,12 +141,12 @@ public class App extends JFrame{
 
     public void set_parser_label() {
         parser_label.setFont(new Font("Arial", Font.BOLD, 20));
-        parser_label.setBounds(1200, 456, 100, 70);
+        parser_label.setBounds(1600, 456, 100, 70);
         add(parser_label); 
     }
 
     public void set_parser_area() {
-        parser_area.setBounds(1020, 523, 440, 100);
+        parser_area.setBounds(1420, 523, 350, 100);
         parser_area.setBorder(BorderFactory.createLineBorder(Color.black));
         parser_area.setFont(new Font("Arial", Font.PLAIN, 17));
         parser_area.setEditable(false);
@@ -126,13 +155,13 @@ public class App extends JFrame{
 
     public void set_parser_btn() {
         parser_btn.setFont(new Font("Arial", Font.PLAIN, 27));
-        parser_btn.setBounds(800, 500, 150, 70);
+        parser_btn.setBounds(1200, 500, 150, 70);
         add(parser_btn); 
     }
 
     public void set_save_code_btn() {
         save_code_btn.setFont(new Font("Arial", Font.PLAIN, 27));
-        save_code_btn.setBounds(800, 200, 150, 70);
+        save_code_btn.setBounds(1200, 200, 150, 70);
         add(save_code_btn); 
     }
 
@@ -144,40 +173,40 @@ public class App extends JFrame{
 
     public void set_tokens_label() {
         tokens_label.setFont(new Font("Arial", Font.BOLD, 20));
-        tokens_label.setBounds(1200,10,100,70);
+        tokens_label.setBounds(1600,10,100,70);
         add(tokens_label); 
     }
 
     public void set_file_btn() {
-        file_btn.setBounds(800, 300, 150, 70);
+        file_btn.setBounds(1200, 300, 150, 70);
         file_btn.setFont(new Font("Arial", Font.PLAIN, 27)); 
         add(file_btn); 
     }
 
     public void set_scanner_btn() {
-        scanner_btn.setBounds(800, 400, 150, 70);
+        scanner_btn.setBounds(1200, 400, 150, 70);
         scanner_btn.setFont(new Font("Arial", Font.PLAIN, 27));
         add(scanner_btn);
     }
 
     public void set_code_area() {
-        code_area.setBounds(40, 70, 700, 420);
+        code_area.setBounds(40, 70, 1110, 420);
         code_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         code_area.setFont(new Font("Monospaced", Font.PLAIN, 30));
 
         JScrollPane scroll = new JScrollPane(code_area); 
-        scroll.setBounds(40, 70, 700, 420);
+        scroll.setBounds(40, 70, 1110, 420);
         add(scroll);
     }
 
     public void set_tokens_area() {
-        tokens_area.setBounds(1020, 70, 440, 383);
+        tokens_area.setBounds(1420, 70, 350, 383);
         tokens_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         tokens_area.setFont(new Font("Arial", Font.PLAIN, 17));
         tokens_area.setEditable(false);
 
         JScrollPane scroll = new JScrollPane(tokens_area);
-        scroll.setBounds(1020, 70, 440, 382); 
+        scroll.setBounds(1420, 70, 350, 382); 
         add(scroll); 
     }
 
@@ -188,6 +217,7 @@ public class App extends JFrame{
         this.parser_btn.addActionListener(listener);
         this.semantic_btn.addActionListener(listener);
         this.intermediate_code_btn.addActionListener(listener);
+        this.object_code_btn.addActionListener(listener);
     }
 
     public JButton getScanner_btn() {
@@ -236,6 +266,14 @@ public class App extends JFrame{
 
     public JButton getIntermediate_code_btn() {
         return intermediate_code_btn;
+    }
+
+    public JTextArea getObject_code_area() {
+        return object_code_area;
+    }
+
+    public JButton getObject_code_btn() {
+        return object_code_btn;
     }
 
 }
